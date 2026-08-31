@@ -32,9 +32,9 @@
         .label {
             color: var(--Creative-primary-color);
             /* ??? */
-            font-size: 1.5vh;
-            margin-top: 1vh;
-            margin-bottom: 4vh;
+            font-size: 100%;
+            margin-top: 0.667em;
+            margin-bottom: 2.667em;
             opacity: 1;
         }
         img {
@@ -44,13 +44,13 @@
             @media screen and (max-width: 767px) {
                 position: relative;
                 transform: translate(0%);
-                margin-bottom: 2vh;
+                margin-bottom: 1.333em;
             }
         }
     }
     .sections .basics {
         .summary {
-            margin-bottom: 3vh;
+            margin-bottom: 2em;
         }
         .record {
             position: relative;
@@ -80,28 +80,28 @@
                 border-left: none;
             }
             &:last-child {
-                margin-bottom: 4vh;
+                margin-bottom: 2.667em;
             }
             h2 {
-                font-size: 2vh;
+                font-size: 133.333%;
                 font-style: italic;
                 position:absolute;
                 border-bottom: none;
                 transform: translate(-100%);
-                padding-left: 2vh;
-                padding-right: 2vh;
-                padding-top: 2vh;
-                padding-bottom: 2vh;
+                padding-left: 1em;
+                padding-right: 1em;
+                padding-top: 1em;
+                padding-bottom: 1em;
                 min-width: 16%;
                 background-color: var(--Creative-primary-color);
                 background: var(--Creative-primary-color);
                 text-align: right;
                 color: var(--Creative-section-color);
-                margin-bottom: 2vh;
+                margin-bottom: 1em;
                 @media screen and (max-width: 767px) {
                     float: none;
-                    font-size: 4vh;
-                    letter-spacing: -0.15vh;
+                    font-size: 266.667%;
+                    letter-spacing: -0.05em;
                     transform: none;
                     position:relative;
                     text-align: left;
@@ -109,7 +109,7 @@
                     color: var(--Creative-primary-color);
                     border-bottom: 5px solid var(--Creative-primary-color);
                     padding-left: 0;
-                    font-size: 3vh;
+                    font-size: 200%;
                 }
                 &:after {
                     content: '';
@@ -129,7 +129,7 @@
                 }
             }
             .record {
-                padding-left: 2vh;
+                padding-left: 1.333em;
                 border-bottom: none;
                 padding-bottom: 0;
                 @media screen and (max-width: 767px) {
@@ -160,17 +160,17 @@
     .skills {
         .collection {
             @extend .grid;
-            padding-left: 2vh;
+            padding-left: 1.333em;
             .content {
                 margin-left: 0%;
-                padding-left: 0vh;
+                padding-left: 0;
                 border-left: none;
             }
             .record {
                 margin-left: 0;
                 border-left: none;
                 padding-left: 0;
-                padding-right: 2vh;
+                padding-right: 1.333em;
             }
         }
     }
@@ -183,35 +183,35 @@
             .bar {
                 order: 1;
                 position: absolute;
-                top: 0.5vh;
+                top: 0.333em;
                 left: 0;
             }
             .head {
                 order: 3;
-                margin-left: 5vh;
+                margin-left: 3.333em;
             }
             .title {
                 order: 2;
             }
         }
         .keywords {
-            margin-left: 5vh;
+            margin-left: 3.333em;
         }
     }
     .interests {
         .collection {
             @extend .grid;
-            padding-left: 2vh;
+            padding-left: 1.333em;
             .interests {
                 margin-left: 0%;
-                padding-left: 0vh;
+                padding-left: 0;
                 border-left: none;
             }
             .record {
                 margin-left: 0;
                 border-left: none;
                 padding-left: 0;
-                padding-right: 2vh;
+                padding-right: 1.333em;
             }
         }
     }
@@ -219,11 +219,11 @@
         .collection {
             display: flex;
             flex-wrap: wrap;
-            padding-left: 0vh;
+            padding-left: 0;
         }
         .language {
             padding-left: 0;
-            padding-right: 2vh;
+            padding-right: 1.333em;
             border-left: none;
             .header {
                 display: flex;
@@ -232,15 +232,15 @@
                 .bar {
                     order: 1;
                     position: absolute;
-                    top: 0.5vh;
+                    top: 0.333em;
                 }
                 .dates {
                     order: 3;
-                    margin-left: 5vh;
+                    margin-left: 3.333em;
                 }
                 .title {
                     order: 2;
-                    margin-left: 5vh;
+                    margin-left: 2.778em;
                 }
             }
         }
@@ -275,7 +275,7 @@ html[dir="rtl"] {
         }
         .record {
             padding-left: 0;
-            padding-right: 2vh;
+            padding-right: 1.333em;
         }
         .resume-header {
             img {
@@ -287,10 +287,10 @@ html[dir="rtl"] {
         .skills {
             .collection {
                 padding-left: 0;
-                padding-right: 2vh;
+                padding-right: 1.333em;
                 .record {
                     padding-right: 0;
-                    padding-left: 2vh;
+                    padding-left: 1.333em;
                 }
             }
             .skill {
@@ -299,13 +299,13 @@ html[dir="rtl"] {
                     .bar {
                         order: 1;
                         position: absolute;
-                        top: 0.5vh;
+                        top: 0.333em;
                         right: 0;
                         left: auto;
                     }
                     .head {
                         order: 3;
-                        margin-right: 5vh;
+                        margin-right: 3.333em;
                         margin-left: auto;
                     }
                     .title {
@@ -314,34 +314,34 @@ html[dir="rtl"] {
                 }
                 .keywords {
                     margin-left: auto;
-                    margin-right: 5vh;
+                    margin-right: 3.333em;
                 }
             }
         }
         .languages {
             .collection {
                 padding-left: 0;
-                padding-right: 2vh;
+                padding-right: 1.333em;
             }
             .language {
-                padding-left: 2vh;
+                padding-left: 1.333em;
                 padding-right: 0;
                 border-left: none;
                 .header {
                     .bar {
                         order: 1;
                         position: absolute;
-                        top: 0.5vh;
+                        top: 0.333em;
                     }
                     .dates {
                         order: 3;
                         margin-left: auto;
-                        margin-right: 5vh;
+                        margin-right: 3.333em;
                     }
                     .title {
                         order: 2;
                         margin-left: auto;
-                        margin-right: 5vh;
+                        margin-right: 2.778em;
                     }
                 }
             }

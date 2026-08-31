@@ -3,7 +3,7 @@
  */
 .resume-viewer {
     .list {
-        margin-bottom: 1vh;;
+        margin-bottom: 0.667em;;
         .title {
             font-weight: bold;
             font-size: 100%;
@@ -12,7 +12,7 @@
             li {
                 display: list-item;
                 list-style-type: square;
-                margin-left: 2vh;
+                margin-left: 1.333em;
             }
         }
     }
@@ -50,7 +50,7 @@ html[dir="rtl"] {
         .list {
             ul {
                 li {
-                    margin-right: 2vh;
+                    margin-right: 1.333em;
                     margin-left: 0;
                 }
             }

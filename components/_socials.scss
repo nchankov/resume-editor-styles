@@ -9,14 +9,14 @@
  * Icons for Social Networks
  */
 .info {
-    height: 3vh;
+    height: 2em;
     .label {
         display: none;
     }
     & {
         &::after {
             float: left;
-            margin-right: 0.5vh;
+            margin-right: 0.333em;
         }
     }
     &.twitter, &.Twitter, &.x {
@@ -85,7 +85,7 @@ html[dir="rtl"] {
         &::after {
             float: right;
             margin-right: 0;
-            margin-left: 0.5vh;
+            margin-left: 0.333em;
         }
     }
 }

@@ -3,7 +3,7 @@
  */
 .resume-viewer {
     section {
-        margin-bottom: 4vh;
+        margin-bottom: 2.667em;
         &:last-child {
             margin-bottom: auto;
         }
@@ -13,13 +13,13 @@
         h2 {
             display: block;
             border-bottom: 1px solid #333;
-            margin-bottom: 2vh;
-            padding-bottom: 1vh;
+            margin-bottom: 0.667em;
+            padding-bottom: 0.333em;
         }
     }
     .record {
-        margin-bottom: 4vh;
-        padding-bottom: 4vh;
+        margin-bottom: 2.667em;
+        padding-bottom: 2.667em;
         border-bottom: 1px solid #dedede;
 
         &:last-child {
@@ -31,8 +31,8 @@
             opacity: 0.5;
         }
         .summary {
-            margin-top: 1.5vh;
-            margin-bottom: 1.5vh;
+            margin-top: 1em;
+            margin-bottom: 1em;
         }
     }
 }
