@@ -14,13 +14,13 @@
  */
 
 .resume-viewer {
-    background: var(--creative-background-color);
-    color: var(--creative-text-color);
+    background: var(--Creative-background-color);
+    color: var(--Creative-text-color);
     h1,h2,h3,h4,h5 {
-        color: var(--creative-title-color);
+        color: var(--Creative-title-color);
     }
     a {
-        color: var(--creative-primary-color);
+        color: var(--Creative-primary-color);
     }
 
     .resume-header {
@@ -30,7 +30,7 @@
             font-weight: bold;
         }
         .label {
-            color: var(--creative-primary-color);
+            color: var(--Creative-primary-color);
             /* ??? */
             font-size: 1.5vh;
             margin-top: 1vh;
@@ -74,7 +74,7 @@
     .sections {
         section {
             margin-left: 20%;
-            border-left: 5px solid var(--creative-primary-color);
+            border-left: 5px solid var(--Creative-primary-color);
             @media screen and (max-width: 767px) {
                 margin-left: 0%;
                 border-left: none;
@@ -93,10 +93,10 @@
                 padding-top: 2vh;
                 padding-bottom: 2vh;
                 min-width: 16%;
-                background-color: var(--creative-primary-color);
-                background: var(--creative-primary-color);
+                background-color: var(--Creative-primary-color);
+                background: var(--Creative-primary-color);
                 text-align: right;
-                color: var(--creative-section-color);
+                color: var(--Creative-section-color);
                 margin-bottom: 2vh;
                 @media screen and (max-width: 767px) {
                     float: none;
@@ -106,8 +106,8 @@
                     position:relative;
                     text-align: left;
                     background-color: transparent;
-                    color: var(--creative-primary-color);
-                    border-bottom: 5px solid var(--creative-primary-color);
+                    color: var(--Creative-primary-color);
+                    border-bottom: 5px solid var(--Creative-primary-color);
                     padding-left: 0;
                     font-size: 3vh;
                 }
@@ -115,7 +115,7 @@
                     content: '';
                     width: 1px;
                     height: 1px;
-                    border: 15px solid  var(--creative-background-color);
+                    border: 15px solid  var(--Creative-background-color);
                     border-top: 15px solid transparent;
                     border-right: 15px solid transparent;
                     position: absolute;
@@ -246,9 +246,9 @@
         }
     }
     .bar {
-        --bar-primary-color: var(--creative-primary-color);
+        --bar-primary-color: var(--Creative-primary-color);
         --bar-secondary-color: lightgray;
-        --bar-background-color: var(--creative-background-color);
+        --bar-background-color: var(--Creative-background-color);
     }
 }
 
@@ -260,12 +260,12 @@ html[dir="rtl"] {
                 margin-left: 0;
                 margin-right: 20%;
                 border-left: 0px solid transparent;
-                border-right: 5px solid var(--creative-primary-color);
+                border-right: 5px solid var(--Creative-primary-color);
                 h2 {
                     transform: translate(100%);
                     text-align: left;
                     &:after {
-                        border-right:  15px solid var(--creative-background-color);
+                        border-right:  15px solid var(--Creative-background-color);
                         border-left: 15px solid transparent;
                         left: auto;
                         right: -1px;

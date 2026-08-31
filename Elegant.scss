@@ -12,12 +12,12 @@
  * Elegant template
  */
 .resume-viewer {
-    color: var(--elegant-text-color);
+    color: var(--Elegant-text-color);
     a {
-        color: var(--elegant-link-color);
+        color: var(--Elegant-link-color);
     }
     h1,h2,h3,h4,h5 {
-        color: var(--elegant-title-color);
+        color: var(--Elegant-title-color);
     }
     /* Record heading styling */
     .record {
@@ -35,7 +35,7 @@
     }
     .sections {
         position: relative;
-        background-color: var(--elegant-background-color);
+        background-color: var(--Elegant-background-color);
         padding: 2vh;
         float: right;
         width: 60%;
@@ -49,11 +49,11 @@
             h2 {
                 font-weight: bold;
                 font-size: 2vh;
-                border-bottom: 2px solid var(--elegant-title-border-color);
+                border-bottom: 2px solid var(--Elegant-title-border-color);
             }
         }
         .record {
-            border-color: var(--elegant-section-separator-color);
+            border-color: var(--Elegant-section-separator-color);
             &:last-child {
                 border-color: transparent;
             }
@@ -64,7 +64,7 @@
         flex-direction: column;
         img {
             order: 0;
-            border-color: var(--elegant-image-border-color);
+            border-color: var(--Elegant-image-border-color);
             margin-bottom: 2vh;
         }
         .title {
@@ -113,7 +113,7 @@
                 padding: 1vh;
             }
             h3 {
-                border-bottom: 2px solid var(--elegant-title-border-color);
+                border-bottom: 2px solid var(--Elegant-title-border-color);
                 margin-bottom: 1vh;
                 padding-bottom: 1vh;
 
@@ -154,11 +154,11 @@
         }
     }
     .skills, .interests {
-        background-color: var(--elegant-special-background-color);
+        background-color: var(--Elegant-special-background-color);
         margin-left: -2vh;
-        color: var(--elegant-special-text-color);
+        color: var(--Elegant-special-text-color);
         h2,h3 {
-            color: var(--elegant-special-text-color);
+            color: var(--Elegant-special-text-color);
         }
         margin-right: -2vh;
         padding: 2vh;

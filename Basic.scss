@@ -21,17 +21,17 @@
 }
 
 .resume-viewer {
-    background: var(--default-background-color);
-    color: var(--default-text-color);
+    background: var(--Basic-background-color);
+    color: var(--Basic-text-color);
     h1,h2,h3,h4,h5 {
-        color: var(--default-title-color);
+        color: var(--Basic-title-color);
     }
     .label {
-        color: var(--default-title-color);
+        color: var(--Basic-title-color);
         opacity: 0.75;
     }
     a {
-        color: var(--default-link-color);
+        color: var(--Basic-link-color);
     }
     /* Main header fonts */
     h1 {
@@ -46,7 +46,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 3vh;;
+        margin-bottom: 3vh;
         img {
             order: 2;
         }
@@ -60,7 +60,7 @@
                 background-color: #000;
                 display: block;float: left;
                 margin-right: 1vh;
-                background-color: var(--default-link-color);
+                background-color: var(--Basic-link-color);
             }
         }
     }
