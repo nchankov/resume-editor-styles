@@ -1,0 +1,505 @@
+@import './components/utils';
+@import './components/typography';
+@import './components/socials';
+@import './components/container';
+@import './components/image';
+@import './components/dates';
+@import './components/list';
+@import './components/blockquote';
+@import './components/sections';
+@import './components/progress/line';
+
+/**
+ * Modern template
+ *
+ * A single flowing column with a narrow rail down the left margin. The rail carries
+ * whatever qualifies a record — dates for work/education/projects, fluency for a
+ * language, proficiency for a skill — so the prose column keeps one unbroken left edge
+ * from the first job to the last interest. Sections that have nothing to put in the rail
+ * simply leave it empty rather than reclaiming the space, because that edge is the
+ * template.
+ *
+ * PRINTING
+ * Every accent in here is a border, a rule or coloured text. Nothing is a filled
+ * background. That is deliberate: browsers print with "background graphics" off by
+ * default, so Creative's filled section headings and Elegant's filled skills panel come
+ * out blank on paper unless the user finds that checkbox. Modern has no such failure
+ * mode — screen and paper are the same document, with no `print-color-adjust` to be
+ * honoured inconsistently and no toner spent on large flat areas.
+ *
+ * Pagination is NOT set here. The editor owns it (src/utils/print.js): `.record` gets
+ * page-break-inside: avoid, and `.page-break-after` comes from the per-entry toggle.
+ * Because a record never splits, the absolutely positioned rail content can never be
+ * orphaned from the entry it belongs to.
+ */
+
+/**
+ * Theme Header Fonts
+ */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap');
+.grotesk {
+    font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+}
+
+/**
+ * The rail, and the indent it forces on everything to its right. `$prose-indent` is the
+ * one number that has to agree in a dozen places — the record's margin, the negative
+ * offset that throws the rail content back out into the margin, the indent on sections
+ * that have no rail content, and every RTL mirror of those.
+ */
+$rail-width: 9em;
+$rail-gap: 1.333em;
+$prose-indent: $rail-width + $rail-gap;
+
+.resume-viewer {
+    /**
+     * Local aliases with the Modern.config defaults baked in as fallbacks. The editor
+     * only emits the `--Modern-*` custom properties outside editor mode (Viewer.vue
+     * guards on `mode.value != 'editor'`), and an unresolved var in a shorthand kills the
+     * whole declaration — `border-left: 1px solid var(--unset)` computes to
+     * `border-left-style: none`, so the rail would disappear rather than merely lose its
+     * colour. Keep these in step with Modern.config.
+     */
+    --modern-accent: var(--Modern-accent-color, #2563EB);
+    --modern-title: var(--Modern-title-color, #111111);
+    --modern-text: var(--Modern-text-color, #333333);
+    --modern-muted: var(--Modern-muted-color, #6B7280);
+    --modern-paper: var(--Modern-background-color, #FFFFFF);
+
+    background: var(--modern-paper);
+    color: var(--modern-text);
+
+    h1, h2, h3, h4, h5 {
+        @extend .grotesk;
+        color: var(--modern-title);
+    }
+    a {
+        color: var(--modern-accent);
+    }
+
+    h1 {
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+    /**
+     * Section headings are a small tracked-out label rather than the 200% default. The
+     * hierarchy is carried by the accent rule under them, so the heading itself does not
+     * need to shout, and short sections stop looking top-heavy.
+     *
+     * Qualified with `section` on purpose: components/_sections.scss styles `section h2`
+     * and `section h3`, which outranks a bare `h2` here and would otherwise keep its #333
+     * rule and its tighter spacing.
+     */
+    section h2 {
+        font-size: 100%;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--modern-accent);
+        border-bottom: 1px solid var(--modern-accent);
+        margin-bottom: 1.6em;
+        padding-bottom: 0.667em;
+        /* Do not strand a section heading at the foot of a page. */
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+    section h3 {
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    /**
+     * The rail.
+     *
+     * The record is pushed right by the full indent and carries the hairline as its own
+     * left border, so the line is a real border on a block that print.js keeps whole —
+     * it fragments correctly and needs no background. Rail content is then thrown back
+     * out into the margin with a negative offset. `left` resolves against the padding
+     * edge, which sits just inside that border, hence the offset is the whole indent.
+     */
+    .record {
+        position: relative;
+        margin-left: $prose-indent;
+        padding-left: $rail-gap;
+        border-left: 1px solid var(--modern-accent);
+        /* replaces the shared #dedede divider — the rail already separates entries */
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 2.4em;
+        &:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        /* the shared rule italicises and halves the opacity; faint grey prints badly */
+        .label {
+            font-style: normal;
+            opacity: 1;
+            color: var(--modern-muted);
+        }
+        .summary {
+            margin-top: 0.667em;
+            margin-bottom: 0;
+        }
+        @media screen and (max-width: 767px) {
+            margin-left: 0;
+        }
+    }
+
+    /**
+     * Anything living in the rail: dates on most records, fluency on a language,
+     * proficiency on a skill. One shared geometry so they line up with each other as
+     * well as with the hairline.
+     */
+    .record .dates,
+    .record .head .level {
+        position: absolute;
+        left: -$prose-indent;
+        /**
+         * Pinned to the top of the record rather than left at its static position: a
+         * skill's level sits after the title in source order, so without this it would
+         * hang lower in the rail than every date on the page. The padding optically
+         * centres the 90%/1.5 rail line against the 120%/1.667 h3 beside it.
+         */
+        top: 0;
+        padding-top: 0.36em;
+        width: $rail-width;
+        text-align: right;
+        font-size: 90%;
+        line-height: 1.5;
+        color: var(--modern-muted);
+        font-variant-numeric: tabular-nums;
+        font-style: normal;
+        opacity: 1;
+        @media screen and (max-width: 767px) {
+            position: static;
+            width: auto;
+            padding-top: 0;
+            text-align: left;
+            margin-bottom: 0.333em;
+        }
+    }
+
+    /**
+     * Stacked in the rail, a start and end date read better one per line than wrapped
+     * mid-range. The trailing dash is moved onto the first line and — unlike the shared
+     * component — suppressed when a record carries a single date, so an award no longer
+     * prints as "March 2019 -" with nothing after it.
+     */
+    .dates {
+        .date {
+            display: block;
+        }
+        .date:first-child::after {
+            content: ' \2013';
+        }
+        .date:first-child:last-child::after {
+            content: '';
+        }
+        @media screen and (max-width: 767px) {
+            .date {
+                display: inline;
+            }
+            /**
+             * A trailing space in generated content collapses against the next span, so
+             * the range would render "March 2021 -present". The no-break space is what
+             * actually holds the gap open.
+             */
+            .date:first-child::after {
+                content: ' \2013\00A0';
+            }
+        }
+    }
+
+    /* Record heading styling */
+    .record {
+        .header {
+            .title {
+                margin-bottom: 0.167em;
+            }
+        }
+        /**
+         * Employer and location on one baseline, separated by a dot rather than a line
+         * break, so the record header stays three lines at most.
+         */
+        .sub-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0 0.5em;
+            .sub-title {
+                font-weight: 500;
+                color: var(--modern-text);
+            }
+            .location {
+                font-size: 90%;
+                color: var(--modern-muted);
+                &::before {
+                    content: '\00B7\00A0';
+                }
+            }
+        }
+    }
+
+    /**
+     * Highlights, courses, roles. A dash in the accent colour instead of a list marker:
+     * it is a glyph, so it prints, and it ties the bullets to the rail.
+     */
+    .list {
+        margin-top: 0.667em;
+        .title {
+            font-size: 90%;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--modern-muted);
+        }
+        ul li {
+            list-style-type: none;
+            margin-left: 0;
+            padding-left: 1em;
+            position: relative;
+            &::before {
+                content: '\2013';
+                position: absolute;
+                left: 0;
+                color: var(--modern-accent);
+            }
+        }
+    }
+    /* Keyword-style lists read better inline; the dash marker would only clutter them. */
+    .keywords, .roles {
+        @extend .flat-list;
+        /**
+         * `@extend .flat-list` alone is not enough: it yields `.resume-viewer .keywords
+         * li`, which loses to `.resume-viewer .list ul li` in components/_list.scss and
+         * its `display: list-item`. Restating the three properties at matching
+         * specificity is what actually makes these read as one comma-separated line.
+         */
+        ul li {
+            display: inline;
+            margin-left: 0;
+            padding-left: 0;
+            &::before {
+                content: none;
+            }
+        }
+    }
+
+    /**
+     * Masthead. Deliberately the one full-width block: the name is the page header, not
+     * a timeline entry, so it gets no rail and no hairline. The prose below it picks the
+     * indent back up so the left edge is established before the first section.
+     */
+    .basics {
+        .record {
+            margin-left: 0;
+            padding-left: 0;
+            border-left: none;
+        }
+        .resume-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2em;
+            padding-bottom: 1.333em;
+            margin-bottom: 1.333em;
+            border-bottom: 2px solid var(--modern-accent);
+            img {
+                order: 2;
+                flex: none;
+                width: 7.333em;
+                height: 7.333em;
+                border-radius: 0.429em;
+                border: 2px solid var(--modern-accent);
+                object-fit: cover;
+            }
+            .title {
+                order: 1;
+            }
+            .label {
+                @extend .grotesk;
+                font-size: 120%;
+                font-weight: 500;
+                color: var(--modern-accent);
+                margin-top: 0.278em;
+            }
+            @media screen and (max-width: 767px) {
+                flex-direction: column-reverse;
+                align-items: flex-start;
+                gap: 1.333em;
+            }
+        }
+        .summary,
+        .contact-details {
+            margin-left: $prose-indent;
+            @media screen and (max-width: 767px) {
+                margin-left: 0;
+            }
+        }
+        .contact-details {
+            display: flex;
+            gap: 2em;
+            margin-top: 1.333em;
+            & > div {
+                flex: 1;
+            }
+            h3 {
+                font-size: 90%;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--modern-muted);
+                margin-bottom: 0.556em;
+            }
+            .address .value {
+                display: inline;
+            }
+            @media screen and (max-width: 767px) {
+                display: block;
+                .profiles {
+                    margin-top: 1.333em;
+                }
+            }
+        }
+    }
+
+    /**
+     * Skills. `display: contents` promotes the level out of `.head` so the absolute
+     * positioning above can place it in the rail alongside the dates of every other
+     * section — the whole point of the rail being "the qualifier", not "the date". The
+     * grid-column fallback keeps it sane on an engine without `display: contents`.
+     */
+    .skills {
+        .record .header .head {
+            display: contents;
+        }
+        .record .header .title {
+            margin-bottom: 0.333em;
+        }
+    }
+
+    /**
+     * Languages put the fluency in the rail, so the collection is a plain stack of rows
+     * rather than the wrapped flex the other templates use.
+     */
+    .languages {
+        .record {
+            margin-bottom: 1.333em;
+        }
+        .header {
+            display: flex;
+            flex-direction: column;
+            .title {
+                order: 1;
+            }
+            .bar {
+                order: 2;
+            }
+        }
+    }
+
+    /**
+     * Interests carry nothing in the rail and are a couple of words each, so they pair up
+     * into columns. The indent moves to the collection rather than being dropped, keeping
+     * the prose edge continuous while the records themselves sit flush inside it.
+     */
+    .interests {
+        .collection {
+            @extend .grid;
+            margin-left: $prose-indent;
+            column-gap: 2em;
+            @media screen and (max-width: 767px) {
+                margin-left: 0;
+            }
+        }
+        .record {
+            margin-left: 0;
+            margin-bottom: 1.333em;
+        }
+    }
+
+    /**
+     * Line bars rather than Creative's circles: they are drawn with border-top, so they
+     * survive a print with background graphics off. Capped in width because a proficiency
+     * meter stretched across the full prose column reads as a divider.
+     */
+    .bar {
+        --bar-primary-color: var(--modern-accent);
+        border-color: var(--modern-muted);
+        max-width: 11em;
+    }
+
+    blockquote {
+        color: var(--modern-text);
+        &::before,
+        &::after {
+            color: var(--modern-accent);
+        }
+    }
+}
+
+/* RTL modifications */
+html[dir="rtl"] {
+    .resume-viewer {
+        /* tracking breaks the joins in connected scripts */
+        h1, h2, h3 {
+            letter-spacing: normal;
+        }
+        .record {
+            margin-left: 0;
+            margin-right: $prose-indent;
+            padding-left: 0;
+            padding-right: $rail-gap;
+            border-left: none;
+            border-right: 1px solid var(--modern-accent);
+            @media screen and (max-width: 767px) {
+                margin-right: 0;
+            }
+        }
+        .record .dates,
+        .record .head .level {
+            left: auto;
+            right: -$prose-indent;
+            text-align: left;
+            @media screen and (max-width: 767px) {
+                right: auto;
+                text-align: right;
+            }
+        }
+        .list ul li {
+            padding-left: 0;
+            padding-right: 1em;
+            &::before {
+                left: auto;
+                right: 0;
+            }
+        }
+        .basics {
+            .record {
+                margin-right: 0;
+                padding-right: 0;
+                border-right: none;
+            }
+            .summary,
+            .contact-details {
+                margin-left: 0;
+                margin-right: $prose-indent;
+                @media screen and (max-width: 767px) {
+                    margin-right: 0;
+                }
+            }
+        }
+        .interests {
+            .collection {
+                margin-left: 0;
+                margin-right: $prose-indent;
+                @media screen and (max-width: 767px) {
+                    margin-right: 0;
+                }
+            }
+            .record {
+                margin-right: 0;
+            }
+        }
+    }
+}
