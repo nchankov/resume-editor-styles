@@ -1,0 +1,418 @@
+@import './components/utils';
+@import './components/typography';
+@import './components/socials';
+@import './components/container';
+@import './components/image';
+@import './components/dates';
+@import './components/list';
+@import './components/blockquote';
+@import './components/sections';
+
+/**
+ * Editorial template
+ *
+ * The only serif in the set, and the only one that differs by voice rather than by
+ * layout. A centred masthead, an italic standfirst, tracked small-caps section labels
+ * under short centred rules, and a small ornament between entries — the vocabulary of a
+ * printed page rather than a web page. Aimed at the roles where Creative and Timeline
+ * read as too techy.
+ *
+ * PRINTING
+ * Same discipline as Modern: every accent is a border, a rule or coloured text, never a
+ * filled background, so the document is identical on screen and on paper whatever the
+ * browser's "background graphics" setting is doing. The one exception is the warm paper
+ * tone on `.resume-viewer`, which browsers drop when printing — losing it costs nothing,
+ * because white paper is what it was imitating.
+ *
+ * Pagination is NOT set here; the editor owns it (src/utils/print.js).
+ */
+
+/**
+ * Theme fonts. Georgia leads the fallback stack rather than a generic `serif` because it
+ * is on virtually every machine and is metrically close enough that a failed webfont
+ * degrades to something still recognisably this template.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+.lora {
+    font-family: 'Lora', Georgia, 'Times New Roman', serif;
+}
+
+.resume-viewer {
+    /**
+     * Local aliases carrying the Editorial.config defaults, so the template still renders
+     * when the editor withholds the custom properties in editor mode. Keep in step with
+     * Editorial.config.
+     */
+    --editorial-accent: var(--Editorial-accent-color, #6B2737);
+    --editorial-title: var(--Editorial-title-color, #1A1A1A);
+    --editorial-text: var(--Editorial-text-color, #2E2E2E);
+    --editorial-muted: var(--Editorial-muted-color, #7A7268);
+    --editorial-paper: var(--Editorial-background-color, #FDFCFA);
+
+    @extend .lora;
+    background: var(--editorial-paper);
+    color: var(--editorial-text);
+    /* set text a little looser than the shared default — this is a reading face */
+    line-height: 155%;
+
+    h1, h2, h3, h4, h5 {
+        color: var(--editorial-title);
+    }
+    a {
+        color: var(--editorial-accent);
+    }
+
+    /**
+     * Section labels: centred, tracked out, with a short rule beneath. `text-indent`
+     * compensates for the trailing letter-space that would otherwise push the label a
+     * half-space left of true centre. Qualified with `section` to outrank
+     * components/_sections.scss, which sets its own border and spacing on `section h2`.
+     */
+    section h2 {
+        text-align: center;
+        font-size: 100%;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        text-indent: 0.25em;
+        color: var(--editorial-title);
+        border-bottom: none;
+        margin-bottom: 1.6em;
+        padding-bottom: 0;
+        page-break-after: avoid;
+        break-after: avoid;
+        &::after {
+            content: '';
+            display: block;
+            width: 3em;
+            margin: 0.667em auto 0;
+            border-top: 2px solid var(--editorial-accent);
+        }
+    }
+    section h3 {
+        font-weight: 600;
+    }
+
+    /**
+     * Records read title / employer / dates, which is the order a printed CV uses but not
+     * the order the markup provides — `.dates` is nested inside `.header`, above the
+     * title, while `.sub-header` is a sibling below it. `display: contents` dissolves the
+     * `.header` box so all three become children of the same flex column and can simply
+     * be given an order.
+     */
+    .record {
+        display: flex;
+        flex-direction: column;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 2em;
+        .header {
+            display: contents;
+        }
+        & > *, .header > * {
+            order: 4;
+        }
+        .header .title {
+            order: 1;
+            font-size: 125%;
+            font-weight: 600;
+            line-height: 140%;
+        }
+        & > .sub-header {
+            order: 2;
+        }
+        .header .dates {
+            order: 3;
+        }
+        .label {
+            font-style: normal;
+            opacity: 1;
+            color: var(--editorial-muted);
+        }
+        .summary {
+            margin-top: 0.5em;
+            margin-bottom: 0;
+        }
+        /**
+         * A small centred ornament between entries instead of a full-width divider.
+         * `order: 9` parks it at the foot of the flex column regardless of what the
+         * record contains.
+         */
+        &::after {
+            content: '';
+            order: 9;
+            display: block;
+            width: 2.5em;
+            margin: 1.6em auto 0;
+            border-top: 1px solid var(--editorial-muted);
+        }
+        &:last-child {
+            margin-bottom: 0;
+            &::after {
+                display: none;
+            }
+        }
+    }
+
+    .record .sub-header {
+        /* employer and location share a baseline; without this each is a block and the
+           record header grows to three lines before the dates even appear */
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0 0.4em;
+        .sub-title {
+            font-style: italic;
+            font-weight: 400;
+            font-size: 105%;
+            color: var(--editorial-text);
+        }
+        .location {
+            font-size: 90%;
+            color: var(--editorial-muted);
+            &::before {
+                content: '\00B7\00A0';
+            }
+        }
+    }
+
+    /**
+     * Dates as a tracked small-caps line of their own. The shared component appends " - "
+     * to `.date:first-child` unconditionally, so a single-date record (an award, a
+     * certificate) renders "March 2019 -" with nothing after it; the second rule is what
+     * suppresses that.
+     */
+    .record .dates {
+        font-size: 85%;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--editorial-muted);
+        margin-top: 0.278em;
+        .date:first-child::after {
+            content: ' \2013\00A0';
+        }
+        .date:first-child:last-child::after {
+            content: '';
+        }
+    }
+
+    .list {
+        margin-top: 0.667em;
+        .title {
+            font-size: 85%;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--editorial-muted);
+        }
+        ul li {
+            list-style-type: none;
+            margin-left: 0;
+            padding-left: 1.1em;
+            position: relative;
+            &::before {
+                content: '\2022';
+                position: absolute;
+                left: 0;
+                color: var(--editorial-accent);
+            }
+        }
+    }
+    /**
+     * `@extend .flat-list` alone loses to `.list ul li { display: list-item }` in
+     * components/_list.scss; restating the properties here at matching specificity is
+     * what makes these read as one comma-separated line.
+     */
+    .keywords, .roles {
+        @extend .flat-list;
+        ul li {
+            display: inline;
+            margin-left: 0;
+            padding-left: 0;
+            &::before {
+                content: none;
+            }
+        }
+    }
+
+    /**
+     * Masthead: photo, name and role stacked on the centre line, then a rule, then the
+     * summary as an italic standfirst.
+     */
+    .basics {
+        .record {
+            margin-bottom: 2.667em;
+            &::after {
+                display: none;
+            }
+        }
+        .resume-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding-bottom: 1.333em;
+            margin-bottom: 1.333em;
+            border-bottom: 1px solid var(--editorial-muted);
+            img {
+                order: 1;
+                width: 7.333em;
+                height: 7.333em;
+                border: 1px solid var(--editorial-muted);
+                object-fit: cover;
+                margin-bottom: 1.333em;
+            }
+            .title {
+                order: 2;
+            }
+            h1 {
+                font-size: 300%;
+                font-weight: 400;
+                letter-spacing: 0.01em;
+                line-height: 115%;
+            }
+            .label {
+                font-style: italic;
+                font-size: 120%;
+                color: var(--editorial-muted);
+                margin-top: 0.278em;
+            }
+        }
+        .summary {
+            text-align: center;
+            font-style: italic;
+            font-size: 110%;
+            max-width: 40em;
+            margin: 0 auto;
+        }
+        /**
+         * Contact details as one centred row. The shared social component floats its icon
+         * pseudo-element, which cannot survive centring, so each item becomes an
+         * inline-flex box and the icon is ordered ahead of the text instead.
+         */
+        .contact-details {
+            display: block;
+            text-align: center;
+            margin-top: 1.6em;
+            h3 {
+                font-size: 82%;
+                font-weight: 700;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                color: var(--editorial-muted);
+                margin-bottom: 0.5em;
+            }
+            .content {
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.333em 1.333em;
+            }
+            .profiles {
+                margin-top: 1.333em;
+            }
+            .address .value {
+                display: inline;
+            }
+        }
+        .info {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.333em;
+            height: auto;
+            &::after {
+                float: none;
+                margin: 0;
+                order: -1;
+            }
+        }
+    }
+
+    /**
+     * No progress bars in this one: a meter is the wrong register for a serif document,
+     * and the level already reads perfectly well as text. Hiding it also clears the empty
+     * `<div class="bar">` that Basic and Elegant leave in the markup.
+     */
+    .bar {
+        display: none;
+    }
+
+    .skills, .interests {
+        .collection {
+            @extend .grid-small;
+            column-gap: 2.667em;
+        }
+        .record {
+            margin-bottom: 1.333em;
+            &::after {
+                display: none;
+            }
+        }
+        .level {
+            font-style: italic;
+            color: var(--editorial-muted);
+            font-size: 95%;
+        }
+    }
+
+    /* Language and fluency on one line, joined by a dash. */
+    .languages {
+        .collection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0 2.667em;
+        }
+        .record {
+            flex-direction: row;
+            align-items: baseline;
+            margin-bottom: 0.667em;
+            &::after {
+                display: none;
+            }
+        }
+        .dates {
+            text-transform: none;
+            letter-spacing: normal;
+            font-style: italic;
+            font-size: 95%;
+            margin-top: 0;
+            &::before {
+                content: '\00A0\2014\00A0';
+            }
+        }
+    }
+
+    .references blockquote {
+        font-size: 108%;
+        &::before, &::after {
+            color: var(--editorial-accent);
+            font-size: 160%;
+        }
+    }
+}
+
+/* RTL modifications */
+html[dir="rtl"] {
+    .resume-viewer {
+        /* tracking breaks the joins in connected scripts */
+        section h2 {
+            letter-spacing: normal;
+            text-indent: 0;
+        }
+        .record .dates {
+            letter-spacing: normal;
+        }
+        .list ul li {
+            padding-left: 0;
+            padding-right: 1.1em;
+            &::before {
+                left: auto;
+                right: 0;
+            }
+        }
+        .basics .info::after {
+            float: none;
+            margin: 0;
+        }
+    }
+}

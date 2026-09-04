@@ -1,0 +1,410 @@
+@import './components/utils';
+@import './components/typography';
+@import './components/socials';
+@import './components/container';
+@import './components/image';
+@import './components/dates';
+@import './components/list';
+@import './components/blockquote';
+@import './components/sections';
+@import './components/progress/line';
+
+/**
+ * Timeline template
+ *
+ * A continuous spine down each section with a node marking every entry. Deliberately not
+ * Modern-with-dots: Modern's rule is a per-record segment carrying the dates out in the
+ * left margin, whereas here the spine belongs to the whole section and runs unbroken
+ * between entries, and the dates stay inside the prose column under the employer. The two
+ * read as different documents rather than as variants.
+ *
+ * PRINTING
+ * This is the one template in the set that does use filled backgrounds — the section
+ * chips and the nodes — forced onto paper with `print-color-adjust: exact`.
+ *
+ * The nodes are built to degrade: an accent border plus an accent fill, so an engine that
+ * drops the fill still leaves a hollow accent ring rather than nothing. The chips cannot
+ * degrade the same way, because their label is knocked out in `section-color`: on an
+ * engine that ignores `print-color-adjust`, a white label on an unprinted fill is an
+ * invisible section heading. Setting `section-color` to a dark value is the escape hatch,
+ * and swapping the chip for an outline under `@media print` is the fix if that engine
+ * ever turns up.
+ *
+ * Pagination is NOT set here; the editor owns it (src/utils/print.js).
+ *
+ * No webfont: this template is carried by its layout rather than by a typeface, so it
+ * costs no blocking network request and renders the same in an offline export.
+ */
+
+/**
+ * Spine geometry. The node is centred on the spine, so its offset is the collection's
+ * padding plus half the node plus half the spine — precomputed here because it appears in
+ * both the LTR and RTL rules and has to agree exactly or the nodes sit off the line.
+ */
+$spine-width: 2px;
+$spine-pad: 2em;
+$node-size: 0.857em;
+/* $spine-pad + $node-size/2 = 2em + 0.4285em */
+$node-offset: 2.4285em;
+
+.resume-viewer {
+    /**
+     * Local aliases carrying the Timeline.config defaults, so the template still renders
+     * when the editor withholds the custom properties in editor mode. Keep in step with
+     * Timeline.config.
+     */
+    --tl-accent: var(--Timeline-accent-color, #0F766E);
+    --tl-on-accent: var(--Timeline-section-color, #FFFFFF);
+    --tl-title: var(--Timeline-title-color, #111827);
+    --tl-text: var(--Timeline-text-color, #374151);
+    --tl-muted: var(--Timeline-muted-color, #6B7280);
+    --tl-paper: var(--Timeline-background-color, #FFFFFF);
+
+    background: var(--tl-paper);
+    color: var(--tl-text);
+
+    h1, h2, h3, h4, h5 {
+        color: var(--tl-title);
+    }
+    a {
+        color: var(--tl-accent);
+    }
+    h1 {
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+
+    /**
+     * Section heading as a filled chip. Qualified with `section` to outrank
+     * components/_sections.scss, which sets `display: block` and a #333 bottom rule on
+     * `section h2` and would otherwise stretch the chip across the full column.
+     */
+    section h2 {
+        display: inline-block;
+        font-size: 95%;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--tl-on-accent);
+        background-color: var(--tl-accent);
+        border: 1px solid var(--tl-accent);
+        border-radius: 2em;
+        padding: 0.444em 1.111em;
+        margin-bottom: 1.333em;
+        border-bottom: 1px solid var(--tl-accent);
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+    section h3 {
+        font-weight: 700;
+    }
+
+    /**
+     * The spine belongs to the collection, not to the records, so it runs unbroken through
+     * the gaps between entries.
+     */
+    .sections section .collection {
+        border-left: $spine-width solid var(--tl-accent);
+        padding-left: $spine-pad;
+        margin-left: 0.429em;
+    }
+
+    /**
+     * Records read title / employer / dates. `.dates` is nested inside `.header` above the
+     * title while `.sub-header` is a sibling below it, so `display: contents` dissolves
+     * the `.header` box and lets all three be ordered in one flex column.
+     */
+    .record {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 2em;
+        &:last-child {
+            margin-bottom: 0;
+        }
+        .header {
+            display: contents;
+        }
+        & > *, .header > * {
+            order: 4;
+        }
+        .header .title {
+            order: 1;
+        }
+        & > .sub-header {
+            order: 2;
+        }
+        .header .dates {
+            order: 3;
+        }
+        .label {
+            font-style: normal;
+            opacity: 1;
+            color: var(--tl-muted);
+        }
+        .summary {
+            margin-top: 0.5em;
+            margin-bottom: 0;
+        }
+        /**
+         * The node. Border and fill are both the accent colour, so where the fill is
+         * dropped the ring survives and the entry is still marked.
+         */
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0.444em;
+            left: calc(-1 * #{$node-offset} - #{$spine-width * 0.5});
+            width: $node-size;
+            height: $node-size;
+            border-radius: 50%;
+            border: $spine-width solid var(--tl-accent);
+            background-color: var(--tl-accent);
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+    }
+
+    /**
+     * Sections that are not chronological — skills, interests, references, languages —
+     * get a hollow node, so the filled ones stay a signal about time rather than mere
+     * decoration repeated down the page.
+     */
+    .skills, .interests, .references, .languages {
+        .record::before {
+            background-color: var(--tl-paper);
+        }
+    }
+
+    .record .sub-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0 0.5em;
+        .sub-title {
+            font-weight: 500;
+            color: var(--tl-text);
+        }
+        .location {
+            font-size: 90%;
+            color: var(--tl-muted);
+            &::before {
+                content: '\00B7\00A0';
+            }
+        }
+    }
+
+    /**
+     * The shared component appends " - " to `.date:first-child` unconditionally, so a
+     * single-date record renders "March 2019 -" with nothing after it; the second rule
+     * suppresses that.
+     */
+    .record .dates {
+        font-size: 88%;
+        letter-spacing: 0.04em;
+        color: var(--tl-muted);
+        margin-top: 0.222em;
+        .date:first-child::after {
+            content: ' \2013\00A0';
+        }
+        .date:first-child:last-child::after {
+            content: '';
+        }
+    }
+
+    .list {
+        margin-top: 0.667em;
+        .title {
+            font-size: 88%;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--tl-muted);
+        }
+        ul li {
+            list-style-type: none;
+            margin-left: 0;
+            padding-left: 1em;
+            position: relative;
+            &::before {
+                content: '\2013';
+                position: absolute;
+                left: 0;
+                color: var(--tl-accent);
+            }
+        }
+    }
+    /**
+     * `@extend .flat-list` alone loses to `.list ul li { display: list-item }` in
+     * components/_list.scss; restating the properties here at matching specificity is
+     * what makes these read as one comma-separated line.
+     */
+    .keywords, .roles {
+        @extend .flat-list;
+        ul li {
+            display: inline;
+            margin-left: 0;
+            padding-left: 0;
+            &::before {
+                content: none;
+            }
+        }
+    }
+
+    /**
+     * The masthead is the page header rather than an entry on the line, so the basics
+     * section drops the spine and the node entirely.
+     *
+     * Qualified as `section.basics` on purpose: the spine is set on
+     * `.sections section .collection`, which carries an element selector and so outranks a
+     * plain `.basics .collection` — the masthead would keep the spine and sit indented
+     * behind it.
+     */
+    .sections section.basics .collection {
+        border-left: none;
+        padding-left: 0;
+        margin-left: 0;
+    }
+    .basics {
+        .record::before {
+            display: none;
+        }
+        .resume-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2em;
+            padding-bottom: 1.333em;
+            margin-bottom: 1.333em;
+            border-bottom: $spine-width solid var(--tl-accent);
+            img {
+                order: 2;
+                flex: none;
+                width: 7.333em;
+                height: 7.333em;
+                border-radius: 50%;
+                border: $spine-width solid var(--tl-accent);
+                object-fit: cover;
+            }
+            .title {
+                order: 1;
+            }
+            .label {
+                font-size: 120%;
+                font-weight: 500;
+                color: var(--tl-accent);
+                margin-top: 0.278em;
+            }
+            @media screen and (max-width: 767px) {
+                flex-direction: column-reverse;
+                align-items: flex-start;
+                gap: 1.333em;
+            }
+        }
+        .contact-details {
+            display: flex;
+            gap: 2em;
+            margin-top: 1.333em;
+            & > div {
+                flex: 1;
+            }
+            h3 {
+                font-size: 88%;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--tl-muted);
+                margin-bottom: 0.556em;
+            }
+            .address .value {
+                display: inline;
+            }
+            @media screen and (max-width: 767px) {
+                display: block;
+                .profiles {
+                    margin-top: 1.333em;
+                }
+            }
+        }
+    }
+
+    .skills {
+        .record {
+            margin-bottom: 1.333em;
+        }
+        .level {
+            font-size: 88%;
+            color: var(--tl-muted);
+        }
+    }
+
+    .languages {
+        .record {
+            margin-bottom: 1.333em;
+        }
+        .header .bar {
+            order: 4;
+        }
+    }
+
+    .interests .record {
+        margin-bottom: 1.333em;
+    }
+
+    /**
+     * Line bars rather than the circular ones: they are drawn with border-top, so unlike
+     * Creative's conic-gradient meters they need no help to reach paper.
+     */
+    .bar {
+        --bar-primary-color: var(--tl-accent);
+        border-color: var(--tl-muted);
+        max-width: 11em;
+        margin-top: 0.444em;
+    }
+
+    blockquote {
+        color: var(--tl-text);
+        &::before, &::after {
+            color: var(--tl-accent);
+        }
+    }
+}
+
+/* RTL modifications */
+html[dir="rtl"] {
+    .resume-viewer {
+        /* tracking breaks the joins in connected scripts */
+        section h2 {
+            letter-spacing: normal;
+        }
+        .sections section .collection {
+            border-left: none;
+            border-right: $spine-width solid var(--tl-accent);
+            padding-left: 0;
+            padding-right: $spine-pad;
+            margin-left: 0;
+            margin-right: 0.429em;
+        }
+        .record::before {
+            left: auto;
+            right: calc(-1 * #{$node-offset} - #{$spine-width * 0.5});
+        }
+        .list ul li {
+            padding-left: 0;
+            padding-right: 1em;
+            &::before {
+                left: auto;
+                right: 0;
+            }
+        }
+        .sections section.basics .collection {
+            border-right: none;
+            padding-right: 0;
+            margin-right: 0;
+        }
+    }
+}
