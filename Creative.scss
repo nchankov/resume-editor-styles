@@ -72,44 +72,106 @@
         }
     }
     .sections {
+        /**
+         * Two columns: the section tag on the left, the entries on the right.
+         *
+         * This used to be `position: absolute` on the h2 plus `transform: translate(-100%)`,
+         * which shifted every heading left by *its own* width. The right edges lined up but
+         * the left edges did not, so the tags sat at a different x for every section — and
+         * nothing bounded how far left a long one could go. "Persönliche Informationen" ran
+         * clean off the left edge of the paper and printed as "nliche Informationen"; every
+         * language with longer section nouns than English hit this.
+         *
+         * A grid track cannot overflow the way a translated absolute box can, so the tags
+         * now share one left edge and a long label wraps inside its column instead of
+         * escaping the page. Keeping the h2 in flow also means it fragments with its own
+         * section rather than being positioned independently of it.
+         */
         section {
-            margin-left: 20%;
-            border-left: 5px solid var(--Creative-primary-color);
-            @media screen and (max-width: 767px) {
-                margin-left: 0%;
-                border-left: none;
+            /**
+             * Float rather than grid. A two-column grid fixes the alignment just as well,
+             * but it makes the whole section one grid row, and Chrome will not fragment a
+             * row across a page boundary — a section taller than the space left on the page
+             * jumps to the next one whole, which left the masthead alone on page 1 with two
+             * thirds of the sheet blank. A float plus a margin on the entries is the older,
+             * duller construction and it paginates natively: the entries are an ordinary
+             * block, so they break wherever the paper runs out.
+             */
+            &::after {
+                content: '';
+                display: table;
+                clear: both;
             }
             &:last-child {
                 margin-bottom: 2.667em;
             }
+            /**
+             * The entries carry the rule, since the tag no longer sits in the section's own
+             * left border, and the margin is what reserves the tag's column. `.basics` has no
+             * h2 but keeps the same margin, so the masthead stays aligned with everything
+             * below it.
+             */
+            .collection {
+                margin-left: 24%;
+                border-left: 5px solid var(--Creative-primary-color);
+                @media screen and (max-width: 767px) {
+                    margin-left: 0;
+                    border-left: none;
+                }
+            }
             h2 {
-                font-size: 133.333%;
+                float: left;
+                /**
+                 * 24% rather than the old 16% floor: the tag has to hold the longest section
+                 * noun in any shipped language — "Veröffentlichungen", "Freiwilligenarbeit",
+                 * "Контактная информация" — on one or two clean lines. Sized together with
+                 * the heading's type size below; narrowing either one starts chopping words.
+                 */
+                width: 24%;
+                position: relative;
+                /**
+                 * Sized against the longest section noun that ships: at 115% the German
+                 * "Veröffentlichungen" missed its column by a single pixel and orphaned two
+                 * characters onto a second line. Measured, not guessed.
+                 */
+                font-size: 110%;
                 font-style: italic;
-                position:absolute;
                 border-bottom: none;
-                transform: translate(-100%);
-                padding-left: 1em;
-                padding-right: 1em;
-                padding-top: 1em;
-                padding-bottom: 1em;
-                min-width: 16%;
+                padding-left: 0.9em;
+                padding-right: 0.9em;
+                padding-top: 0.8em;
+                padding-bottom: 0.8em;
+                /* the column sets the width now; a floor would only reintroduce overflow */
+                min-width: 0;
+                /* last resort only: a single word longer than the column still must not
+                   escape it, but the sizing above is what keeps this from firing */
+                overflow-wrap: break-word;
+                hyphens: auto;
                 background-color: var(--Creative-primary-color);
-                background: var(--Creative-primary-color);
                 text-align: right;
                 color: var(--Creative-section-color);
                 margin-bottom: 1em;
+                /**
+                 * The tag is a filled block, and browsers print with background graphics off
+                 * by default — which left a white italic label on an unprinted fill, i.e. an
+                 * invisible section heading. This is what keeps it on paper.
+                 */
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+                /* only bites in the stacked mobile layout — break properties are ignored
+                   on a float, where the tag travels with its section anyway */
+                page-break-after: avoid;
+                break-after: avoid;
                 @media screen and (max-width: 767px) {
                     float: none;
-                    font-size: 266.667%;
+                    width: auto;
+                    font-size: 200%;
                     letter-spacing: -0.05em;
-                    transform: none;
-                    position:relative;
                     text-align: left;
                     background-color: transparent;
                     color: var(--Creative-primary-color);
                     border-bottom: 5px solid var(--Creative-primary-color);
                     padding-left: 0;
-                    font-size: 200%;
                 }
                 &:after {
                     content: '';
@@ -156,6 +218,15 @@
             }
         }
     }
+    /**
+     * components/_dates.scss appends " - " to `.date:first-child` unconditionally, so a
+     * record carrying a single date — an award, a certificate, a publication — printed as
+     * "November 2022 -" with nothing after the dash.
+     */
+    .dates .date:first-child:last-child::after {
+        content: '';
+    }
+
     /* individual sections */
     .skills {
         .collection {
@@ -245,10 +316,19 @@
             }
         }
     }
+    /**
+     * The circular meters are drawn with a conic-gradient behind a mask, which is a
+     * background: without this they print as blank rings whenever background graphics are
+     * off, so every skill and language reads as level zero.
+     */
     .bar {
         --bar-primary-color: var(--Creative-primary-color);
         --bar-secondary-color: lightgray;
         --bar-background-color: var(--Creative-background-color);
+        &::before, &::after {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
     }
 }
 
@@ -257,15 +337,27 @@ html[dir="rtl"] {
     .resume-viewer {
         .sections {
             section {
-                margin-left: 0;
-                margin-right: 20%;
-                border-left: 0px solid transparent;
-                border-right: 5px solid var(--Creative-primary-color);
+                .collection {
+                    margin-left: 0;
+                    margin-right: 24%;
+                    border-left: none;
+                    border-right: 5px solid var(--Creative-primary-color);
+                    @media screen and (max-width: 767px) {
+                        margin-right: 0;
+                        border-right: none;
+                    }
+                }
                 h2 {
-                    transform: translate(100%);
+                    float: right;
+                    @media screen and (max-width: 767px) {
+                        float: none;
+                    }
+                }
+                h2 {
                     text-align: left;
                     &:after {
-                        border-right:  15px solid var(--Creative-background-color);
+                        border: 15px solid var(--Creative-background-color);
+                        border-top: 15px solid transparent;
                         border-left: 15px solid transparent;
                         left: auto;
                         right: -1px;
